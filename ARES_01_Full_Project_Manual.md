@@ -85,8 +85,8 @@ Every component in ARES-01 serves a specific purpose in the architecture.
 | 1 | **ESP32-S3 CAM Dev Board (with OV2640 & Antenna)** | 1 | The absolute "Brain" of the rover. It processes the camera video, hosts the Wi-Fi WebSocket server, and issues I2C commands to move motors. |
 | 2 | **PCA9685 PWM Driver** | 2 | Since the ESP32 doesn't have enough PWM pins for 9 motors, these drivers expand the capability. They convert simple I2C signals into 32 channels of perfect PWM signals. |
 | 3 | **I2C Logic Level Converter** | 1 | The ESP32 runs at 3.3V, but the PCA9685 prefers 5V logic. This chip bridges them, ensuring signals aren't corrupted or hardware fried. |
-| 4 | **TB6612FNG Motor Driver** | 2 | Used for the smaller precision gear motors of the robotic arm. It is highly efficient and runs cooler than older drivers. |
-| 5 | **L298N Motor Driver** | 3 | Used for the heavy-duty rover base wheels and the main base/shoulder joint of the robotic arm which require high current. |
+| 4 | **TB6612FNG Motor Driver** | 2 | Used for the smaller precision gear motors of the robotic arm (Shoulder, Elbow, Wrist, Gripper). Highly efficient for precise 4-joint control. |
+| 5 | **L298N Motor Driver** | 3 | Used for the heavy-duty rover base wheels (2 drivers) and the main base rotation joint of the robotic arm (1 driver) which require high current. |
 | 6 | **Voltage Regulator (Buck Converter)** | 1 | Takes the dangerous 11.1V from the LiPo battery and converts it into a perfectly safe, stable 5.0V to power the delicate ESP32 and logic boards. |
 | 7 | **LiPo Battery (3300mAh, 11.1V, 3S)** | 1 | The main fuel tank. 11.1 Volts provides immense torque to the motors, while 3300mAh ensures long mission duration. |
 | 8 | **T-Connector (XT60)** | 1 | A secure, spark-proof connector ensuring the high-current battery doesn't accidentally disconnect during rover movement. |
@@ -111,7 +111,7 @@ Every component in ARES-01 serves a specific purpose in the architecture.
    * -> `VCC` of **TB6612FNG Driver 1 & 2**
 
 ### 2.3 Comprehensive Pin Mapping & Wiring Guide (A-Z)
-*This section details the exact pin-to-pin wiring extracted directly from the ESP32-S3 C++ firmware source code.*
+*This section details the exact pin-to-pin wiring extracted directly from the ESP32-S3 C++ firmware source code (`HardwareController.cpp`).*
 
 #### A. I2C Bus & Logic Level Translation
 * **ESP32-S3 `3.3V Pin`** -> Logic Converter `LV (Low Voltage)`
@@ -121,57 +121,34 @@ Every component in ARES-01 serves a specific purpose in the architecture.
 
 #### B. PCA9685 I2C Addressing (CRITICAL)
 Since we are using **two** PCA9685 boards on the same I2C bus, they MUST have different addresses.
-* **PCA9685 Board 1 (Chassis Wheels):** 
+* **PCA9685 Board 1 (Chassis Wheels Drive):** 
   * Keep exactly as it comes from the factory.
   * **Default Address:** `0x40`.
-* **PCA9685 Board 2 (Robotic Arm):** 
+* **PCA9685 Board 2 (Robotic Arm Drive):** 
   * You must change its address to `0x41`. 
   * **How to do it:** Look at the top right of the second PCA9685 module. You will see solder pads labeled A0, A1, A2, etc. Use a soldering iron to put a drop of solder across the two halves of the **A0** pad, bridging them together. This changes the hardware address to `0x41`.
 
 #### C. PCA9685 to Motor Drivers Control Wiring (Full Mapping)
-*The PCA9685 sends PWM signals (Speed) and Logic High/Low (Direction) to the motor drivers based on the `HardwareController.cpp` definitions.*
+*The PCA9685 modules send PWM signals (Speed) and Logic High/Low (Direction) to specific Motor Drivers. Based on the system architecture, we use two L298N drivers for the 4 rover wheels, one L298N for the heavy Arm Base, and two TB6612FNG drivers for the remaining 4 arm joints.*
 
-**PCA9685 Board 1 (Address 0x40) -> Drive Wheels:**
-* **Front Left Wheel:**
-  * Channel 0 -> `ENA` (Speed)
-  * Channel 2 -> `IN1` (Direction Forward)
-  * Channel 1 -> `IN2` (Direction Reverse)
-* **Back Left Wheel:**
-  * Channel 5 -> `ENB` (Speed)
-  * Channel 4 -> `IN3` (Direction Forward)
-  * Channel 3 -> `IN4` (Direction Reverse)
-* **Front Right Wheel:**
-  * Channel 6 -> `ENA` (Speed)
-  * Channel 8 -> `IN1` (Direction Forward)
-  * Channel 7 -> `IN2` (Direction Reverse)
-* **Back Right Wheel:**
-  * Channel 11 -> `ENB` (Speed)
-  * Channel 10 -> `IN3` (Direction Forward)
-  * Channel 9 -> `IN4` (Direction Reverse)
-* **TB6612FNG Standby Control:**
-  * Channel 15 -> Pulled HIGH to enable TB6612FNG `STBY` pins.
+**PCA9685 Board 1 (Address 0x40) -> Drive Wheels (via 2x L298N Drivers):**
+* **L298N Driver 1 (Left Side Wheels):**
+  * Front Left Wheel: Channel 0 -> `ENA` (Speed), Channel 2 -> `IN1`, Channel 1 -> `IN2` (Direction)
+  * Back Left Wheel: Channel 5 -> `ENB` (Speed), Channel 4 -> `IN3`, Channel 3 -> `IN4` (Direction)
+* **L298N Driver 2 (Right Side Wheels):**
+  * Front Right Wheel: Channel 6 -> `ENA` (Speed), Channel 8 -> `IN1`, Channel 7 -> `IN2` (Direction)
+  * Back Right Wheel: Channel 11 -> `ENB` (Speed), Channel 10 -> `IN3`, Channel 9 -> `IN4` (Direction)
+* *(Note: Channel 15 is pulled HIGH in firmware to optionally enable TB6612FNG STBY pins if they are wired here).*
 
-**PCA9685 Board 2 (Address 0x41) -> Robotic Arm Joints:**
-* **Arm Wrist:**
-  * Channel 0 -> `PWMA` (Speed)
-  * Channel 1 -> `AIN1` (Direction)
-  * Channel 2 -> `AIN2` (Direction)
-* **Arm Elbow:**
-  * Channel 3 -> `PWMB` (Speed)
-  * Channel 4 -> `BIN1` (Direction)
-  * Channel 5 -> `BIN2` (Direction)
-* **Arm Shoulder:**
-  * Channel 6 -> `ENA` (Speed)
-  * Channel 7 -> `IN1` (Direction)
-  * Channel 8 -> `IN2` (Direction)
-* **Arm Gripper:**
-  * Channel 9 -> `PWMA` (Speed)
-  * Channel 15 -> `AIN1` (Direction)
-  * Channel 11 -> `AIN2` (Direction)
-* **Arm Base:**
-  * Channel 12 -> `ENB` (Speed)
-  * Channel 13 -> `IN3` (Direction)
-  * Channel 14 -> `IN4` (Direction)
+**PCA9685 Board 2 (Address 0x41) -> Robotic Arm (via 1x L298N & 2x TB6612FNG):**
+* **L298N Driver 3 (Heavy Duty - Arm Base):**
+  * Arm Base: Channel 12 -> `ENA` (Speed), Channel 13 -> `IN1`, Channel 14 -> `IN2` (Direction)
+* **TB6612FNG Driver 1 (Arm Wrist & Elbow):**
+  * Arm Wrist: Channel 0 -> `PWMA` (Speed), Channel 1 -> `AIN1`, Channel 2 -> `AIN2` (Direction)
+  * Arm Elbow: Channel 3 -> `PWMB` (Speed), Channel 4 -> `BIN1`, Channel 5 -> `BIN2` (Direction)
+* **TB6612FNG Driver 2 (Arm Shoulder & Gripper):**
+  * Arm Shoulder: Channel 6 -> `PWMA` (Speed), Channel 7 -> `AIN1`, Channel 8 -> `AIN2` (Direction)
+  * Arm Gripper: Channel 9 -> `PWMB` (Speed), Channel 15 -> `BIN1`, Channel 11 -> `BIN2` (Direction)
 
 ---
 
