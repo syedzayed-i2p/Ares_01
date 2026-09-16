@@ -24,8 +24,9 @@ Barishal Polytechnic Institute
   * 1.4 Operating the Rover (Voice & Sliders)
 * **Part 2: Build / Assembly Manual & Hardware Details**
   * 2.1 Detailed Component List & Usage Justification
-  * 2.2 System Power Distribution
-  * 2.3 Comprehensive Pin Mapping & Wiring Guide (A-Z)
+  * 2.2 System Power Distribution (11.1V & 5V Logic)
+  * 2.3 I2C Logic Level Translation
+  * 2.4 Comprehensive Motor Driver Wiring (Pin-to-Pin)
 * **Part 3: Technical / Developer Manual**
   * 3.1 Software & System Architecture
   * 3.2 WebSocket Communication JSON Protocol
@@ -94,61 +95,58 @@ Every component in ARES-01 serves a specific purpose in the architecture.
 | 10 | **Robotic Arm Edge Kit (5 DOF)** | 1 | The mechanical chassis of the arm, allowing complex object manipulation. |
 | 11 | **DC Motor (Rover Wheel)** | 4 | The 4-wheel drive system enabling all-terrain navigation. |
 
-### 2.2 System Power Distribution
+### 2.2 System Power Distribution (11.1V & 5V Logic)
 **WARNING:** Never connect the 11.1V LiPo battery directly to the ESP32 or Logic components.
-1. **LiPo Battery (11.1V 3S)** -> `XT60 Connector` -> `Main Power Switch`.
-2. **From the Main Switch (11.1V High-Power Line):**
-   * -> `12V Input` of **L298N Motor Driver 1** (Front Wheels)
-   * -> `12V Input` of **L298N Motor Driver 2** (Rear Wheels)
-   * -> `12V Input` of **L298N Motor Driver 3** (Arm Base)
-   * -> `VMOT` of **TB6612FNG Driver 1** (Arm Elbow & Wrist)
-   * -> `VMOT` of **TB6612FNG Driver 2** (Arm Gripper & Shoulder)
-   * -> `IN+` of the **Buck Converter**
-3. **From the Buck Converter (5V Stable Logic Line):**
-   * -> `5V Pin` of **ESP32-S3**
-   * -> `VCC` and `V+` of **PCA9685 Driver 1 & 2**
-   * -> `HV (High Voltage)` of **I2C Logic Level Converter**
-   * -> `VCC` of **TB6612FNG Driver 1 & 2**
 
-### 2.3 Comprehensive Pin Mapping & Wiring Guide (A-Z)
+| Power Source | Component | Input Voltage | Output | Target Connection |
+| :--- | :--- | :---: | :---: | :--- |
+| **LiPo Battery (3S)** | Main Switch | 11.1V | 11.1V | ➔ XT60 Connector |
+| **Main Switch** | L298N Drivers (x3) | 11.1V | - | ➔ `12V Input` Pin |
+| **Main Switch** | TB6612 Drivers (x2) | 11.1V | - | ➔ `VMOT` Pin |
+| **Main Switch** | Buck Converter | 11.1V | 5.0V | ➔ `IN+` Pin |
+| **Buck Converter** | ESP32-S3 | 5.0V | - | ➔ `5V` Pin |
+| **Buck Converter** | PCA9685 (x2) | 5.0V | - | ➔ `VCC` & `V+` Pins |
+| **Buck Converter** | Level Converter | 5.0V | - | ➔ `HV` (High Voltage Ref) |
+
+### 2.3 I2C Logic Level Translation
+Because the ESP32-S3 operates at 3.3V and the PCA9685 operates best at 5V, data must pass through the Logic Converter safely.
+
+| ESP32-S3 (3.3V Logic) | Level Converter Bridge | PCA9685 (5V Logic) |
+| :--- | :--- | :--- |
+| `GPIO 1 (SDA)` | ➔ `LV1` ➔ `HV1` | ➔ `SDA` (Board 1 & 2) |
+| `GPIO 2 (SCL)` | ➔ `LV2` ➔ `HV2` | ➔ `SCL` (Board 1 & 2) |
+| `3.3V Pin` | ➔ `LV` (Reference) | - |
+| `GND` | ➔ `GND` | ➔ `GND` (Common) |
+
+### 2.4 Comprehensive Motor Driver Wiring (Pin-to-Pin)
 *This section details the exact pin-to-pin wiring extracted directly from the ESP32-S3 C++ firmware source code (`HardwareController.cpp`).*
 
-#### A. I2C Bus & Logic Level Translation
-* **ESP32-S3 `3.3V Pin`** -> Logic Converter `LV (Low Voltage)`
-* **ESP32-S3 `GND`** -> Logic Converter `GND`
-* **ESP32-S3 `GPIO 1 (SDA)`** -> Logic Converter `LV1` -> Logic Converter `HV1` -> **PCA9685 (#1 & #2) `SDA`**
-* **ESP32-S3 `GPIO 2 (SCL)`** -> Logic Converter `LV2` -> Logic Converter `HV2` -> **PCA9685 (#1 & #2) `SCL`**
+#### A. PCA9685 Addressing Setup
+To control 9 motors simultaneously, two PCA9685 boards share the same I2C bus but use different hardware addresses.
+*   **Board 1 (Drive Wheels):** Factory Default **`0x40`**.
+*   **Board 2 (Robotic Arm):** Change to **`0x41`**. *(To do this: Solder the two halves of the `A0` pad together on the board).*
 
-#### B. PCA9685 I2C Addressing (CRITICAL)
-Since we are using **two** PCA9685 boards on the same I2C bus, they MUST have different addresses.
-* **PCA9685 Board 1 (Chassis Wheels Drive):** 
-  * Keep exactly as it comes from the factory.
-  * **Default Address:** `0x40`.
-* **PCA9685 Board 2 (Robotic Arm Drive):** 
-  * You must change its address to `0x41`. 
-  * **How to do it:** Look at the top right of the second PCA9685 module. You will see solder pads labeled A0, A1, A2, etc. Use a soldering iron to put a drop of solder across the two halves of the **A0** pad, bridging them together. This changes the hardware address to `0x41`.
+#### B. PCA Board 1 (0x40) ➔ 2x L298N (Drive Wheels)
+*Used exclusively for the 4-wheel drive system.*
 
-#### C. PCA9685 to Motor Drivers Control Wiring (Full Mapping)
-*The PCA9685 modules send PWM signals (Speed) and Logic High/Low (Direction) to specific Motor Drivers. Based on the system architecture, we use two L298N drivers for the 4 rover wheels, one L298N for the heavy Arm Base, and two TB6612FNG drivers for the remaining 4 arm joints.*
+| Motor Driver | Target Motor | PWM (Speed) | Direction 1 | Direction 2 |
+| :--- | :--- | :--- | :--- | :--- |
+| **L298N #1 (Left)** | Front Left Wheel | PCA1 `Ch 0` ➔ `ENA` | PCA1 `Ch 2` ➔ `IN1` | PCA1 `Ch 1` ➔ `IN2` |
+| | Back Left Wheel | PCA1 `Ch 5` ➔ `ENB` | PCA1 `Ch 4` ➔ `IN3` | PCA1 `Ch 3` ➔ `IN4` |
+| **L298N #2 (Right)**| Front Right Wheel| PCA1 `Ch 6` ➔ `ENA` | PCA1 `Ch 8` ➔ `IN1` | PCA1 `Ch 7` ➔ `IN2` |
+| | Back Right Wheel | PCA1 `Ch 11` ➔ `ENB`| PCA1 `Ch 10` ➔ `IN3`| PCA1 `Ch 9` ➔ `IN4` |
+*(Note: PCA1 Channel 15 is pulled HIGH in firmware to optionally enable TB6612 STBY pins if shared).*
 
-**PCA9685 Board 1 (Address 0x40) -> Drive Wheels (via 2x L298N Drivers):**
-* **L298N Driver 1 (Left Side Wheels):**
-  * Front Left Wheel: Channel 0 -> `ENA` (Speed), Channel 2 -> `IN1`, Channel 1 -> `IN2` (Direction)
-  * Back Left Wheel: Channel 5 -> `ENB` (Speed), Channel 4 -> `IN3`, Channel 3 -> `IN4` (Direction)
-* **L298N Driver 2 (Right Side Wheels):**
-  * Front Right Wheel: Channel 6 -> `ENA` (Speed), Channel 8 -> `IN1`, Channel 7 -> `IN2` (Direction)
-  * Back Right Wheel: Channel 11 -> `ENB` (Speed), Channel 10 -> `IN3`, Channel 9 -> `IN4` (Direction)
-* *(Note: Channel 15 is pulled HIGH in firmware to optionally enable TB6612FNG STBY pins if they are wired here).*
+#### C. PCA Board 2 (0x41) ➔ 1x L298N & 2x TB6612FNG (Robotic Arm)
+*Used exclusively for the 5-DOF Robotic Arm.*
 
-**PCA9685 Board 2 (Address 0x41) -> Robotic Arm (via 1x L298N & 2x TB6612FNG):**
-* **L298N Driver 3 (Heavy Duty - Arm Base):**
-  * Arm Base: Channel 12 -> `ENA` (Speed), Channel 13 -> `IN1`, Channel 14 -> `IN2` (Direction)
-* **TB6612FNG Driver 1 (Arm Wrist & Elbow):**
-  * Arm Wrist: Channel 0 -> `PWMA` (Speed), Channel 1 -> `AIN1`, Channel 2 -> `AIN2` (Direction)
-  * Arm Elbow: Channel 3 -> `PWMB` (Speed), Channel 4 -> `BIN1`, Channel 5 -> `BIN2` (Direction)
-* **TB6612FNG Driver 2 (Arm Shoulder & Gripper):**
-  * Arm Shoulder: Channel 6 -> `PWMA` (Speed), Channel 7 -> `AIN1`, Channel 8 -> `AIN2` (Direction)
-  * Arm Gripper: Channel 9 -> `PWMB` (Speed), Channel 15 -> `BIN1`, Channel 11 -> `BIN2` (Direction)
+| Motor Driver | Target Arm Joint | PWM (Speed) | Direction 1 | Direction 2 |
+| :--- | :--- | :--- | :--- | :--- |
+| **L298N #3 (Heavy)**| Base Rotation | PCA2 `Ch 12` ➔ `ENA` | PCA2 `Ch 13` ➔ `IN1` | PCA2 `Ch 14` ➔ `IN2` |
+| **TB6612 #1** | Arm Wrist | PCA2 `Ch 0` ➔ `PWMA` | PCA2 `Ch 1` ➔ `AIN1` | PCA2 `Ch 2` ➔ `AIN2` |
+| | Arm Elbow | PCA2 `Ch 3` ➔ `PWMB` | PCA2 `Ch 4` ➔ `BIN1` | PCA2 `Ch 5` ➔ `BIN2` |
+| **TB6612 #2** | Arm Shoulder | PCA2 `Ch 6` ➔ `PWMA` | PCA2 `Ch 7` ➔ `AIN1` | PCA2 `Ch 8` ➔ `AIN2` |
+| | Arm Gripper | PCA2 `Ch 9` ➔ `PWMB` | PCA2 `Ch 15` ➔ `BIN1`| PCA2 `Ch 11` ➔ `BIN2` |
 
 ---
 
