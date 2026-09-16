@@ -2432,9 +2432,9 @@ export default function Dashboard() {
   // Voice language ref — accessible before the voice state block is declared
   const voiceLanguageRef = useRef("bn-BD");
 
-  const handleAiDirectiveSubmit = useCallback(async (overrideText?: string | any, source: "ai" | "voice" = "ai") => {
+  const handleAiDirectiveSubmit = useCallback(async (overrideText?: string | any, source: "ai" | "voice" = "ai", fastPathOnly: boolean = false) => {
     const rawTextToProcess = typeof overrideText === 'string' ? overrideText : directiveInput;
-    if (typeof rawTextToProcess !== 'string' || !rawTextToProcess.trim() || isProcessing || isExecutingRef.current) return;
+    if (typeof rawTextToProcess !== 'string' || !rawTextToProcess.trim() || isProcessing || isExecutingRef.current) return false;
 
     const textToProcess = normalizeBengaliNumbers(rawTextToProcess);
     setIsProcessing(true);
@@ -2457,7 +2457,7 @@ export default function Dashboard() {
         // Arm joint keywords
         'গ্রিপার', 'শোল্ডার', 'এলবো', 'রিস্ট', 'বেস', 'কাঁধ', 'কনুই', 'কবজি', 'খোলো', 'খুলো', 'খোলা', 'বন্ধ', 'ওপরে', 'উপরে', 'নিচে', 'নামাও', 'ঘুরাও', 'আটকাও', 'চিমটা', 'ধরন',
         // Additional Bengali arm words
-        'রিষ্ট', 'কব্জি', 'কাধ', 'কনু', 'এলব', 'গ্রিপ', 'ক্ল', 'ঘোরাও', 'সোল্ডার', 'বেইস', 'বেজ', 'বেশ', 'bondo', 'বেইজ', 'বেস্ট', 'ব্যাস', 'দেশ', 'ফেস', 'গেস', 'ব্রেস', 'পেস', 'ভেজ', 'বেছ', 'গোড়া', 'হাত', 'আঙুল', 'আঙ্গুল', 'চিমটি', 'কামড়', 'মুঠো', 'reach', 'rich', 'reached',
+        'রিষ্ট', 'কব্জি', 'কাধ', 'কনু', 'এলব', 'গ্রিপ', 'ক্ল', 'ঘোরাও', 'সোল্ডার', 'বেইজ', 'বেজ', 'বেশ', 'bondo', 'বেইজ', 'বেস্ট', 'ব্যাস', 'দেশ', 'ফেস', 'গেস', 'ব্রেস', 'পেস', 'েজ', 'বেছ', 'গোড়া', 'হাত', 'আঙুল', 'আঙ্গুল', 'চিমটি', 'কামড়', 'মুঠো', 'reach', 'rich', 'reached',
         // Direction words
         'উঠা', 'তুলো', 'ওঠা', 'ডাউন', 'আপ', 'ওঠাও', 'তোলো', 'যাও', 'নেও', 'ঘুরাও', 'উড়াও', 'উডাও', 'ওঠো', 'ও', 'bamdike', 'baame', 'daane', 'উঁচুতে', 'নিচের', 'ছাড়', 'ছেড়ে', 'ধরে', 'বাঁদিকে', 'ডানদিকে',
         // Bengali mode home/reset
@@ -2467,7 +2467,7 @@ export default function Dashboard() {
       if (!hasRealBengaliWord) {
         appendLog(`[${new Date().toLocaleTimeString()}] [SYS] Ignored: Full English command in Bengali mode. Use English mode or Banglish.`);
         setIsProcessing(false);
-        return;
+        return false;
       }
     }
 
@@ -2489,11 +2489,11 @@ export default function Dashboard() {
       // Object words
       'বস্তু', 'object', 'ball', 'বল', 'thing', 'জিনিস', 'jinish', 'bostu', 'অবজেক্ট', 'কিছু',
       // Individual arm joint keywords (with phonetic variations for speech recognition)
-      'gripper', 'grip', 'griper', 'greeper', 'গ্রিপার', 'গ্রিপ্পার', 'গ্রিপের', 'চিমটা', 'ধরন', 'claw', 'jaw', 'ক্ল', 'গ্রিপ', 'হাত', 'haat', 'আঙ্গুল', 'angul', 'চিমটি', 'chimti', 'কামড়', 'kamor', 'মুঠো', 'mutho',
+      'gripper', 'grip', 'griper', 'greeper', 'গ্রিপার', 'গ্রিপ্পার', 'গ্রিপের', 'চিমটা', 'ধরন', 'claw', 'jaw', 'ক্ল', 'গ্রিপ', 'হাত', 'haat', 'আঙ্গুল', 'angul', 'চিমটি', 'chimti', 'কামড়', 'kamor', 'মুঠো', 'mutho',
       'shoulder', 'শোল্ডার', 'কাঁধ', 'kandh', 'কাধ', 'সোল্ডার',
       'elbow', 'এলবো', 'কনুই', 'konui', 'কনু', 'এলব',
       'wrist', 'রিস্ট', 'কবজি', 'kobji', 'risk', 'rist', 'rest', 'রিষ্ট', 'কব্জি', 'reach', 'rich', 'reached',
-      'base', 'বেস', 'ঘুরাও', 'ghurao', 'rotate', 'turn', 'ঘোরাও', 'spin', 'bass', 'bays', 'pace', 'বেইস', 'বেজ', 'বেশ', 'baze', 'bej', 'bez', 'vesh', 'bes', 'besh', 'বেইজ', 'বেস্ট', 'ব্যাস', 'দেশ', 'ফেস', 'গেস', 'ব্রেস', 'পেস', 'ভেজ', 'বেছ', 'গোড়া',
+      'base', 'বেস', 'ঘুরাও', 'ghurao', 'rotate', 'turn', 'ঘোরাও', 'spin', 'bass', 'bays', 'pace', 'বেইজ', 'বেজ', 'বেশ', 'baze', 'bej', 'bez', 'vesh', 'bes', 'besh', 'বেইজ', 'বেস্ট', 'ব্যাস', 'দেশ', 'ফেস', 'গেস', 'ব্রেস', 'পেস', 'েজ', 'বেছ', 'গোড়া',
       'খোলো', 'খুলো', 'খোলা', 'khola', 'open', 'kholo', 'ওপেন', 'release',
       'বন্ধ', 'bondo', 'close', 'bondho', 'ক্লোজ', 'আটকাও', 'shut', 'clamp',
       'উপরে', 'ওপরে', 'up', 'upore', 'raise', 'উঠা', 'তুলো', 'আপ',
@@ -2505,7 +2505,12 @@ export default function Dashboard() {
         appendLog(`[${new Date().toLocaleTimeString()}] [SYS] Fast-path local command executed.`);
         await executeLocalKeywordFallback(textToProcess, new Date().toLocaleTimeString(), appendLog);
         setIsProcessing(false);
-        return;
+        return true;
+    }
+
+    if (fastPathOnly) {
+        setIsProcessing(false);
+        return false;
     }
 
     // SLOW-PATH: Send complex directives to Gemini
@@ -2514,6 +2519,7 @@ export default function Dashboard() {
     setTimeout(() => {
         setIsProcessing(false);
     }, 500);
+    return true;
   }, [directiveInput, isProcessing, commandUrl, executeLocalKeywordFallback, executeAutonomousDirective]);
 
 
@@ -2580,6 +2586,27 @@ export default function Dashboard() {
 
         if (interimTranscript) {
           setVoiceTranscript(`Hearing: "${interimTranscript}"...`);
+          
+          // FAST-PATH: INSTANT EXECUTION ON INTERIM RESULTS
+          if (!isVoiceProcessingRef.current) {
+            const interimCommandText = interimTranscript.trim().toLowerCase();
+            if (interimCommandText.length > 2) {
+              // Try executing immediately using local fallback logic
+              handleAiDirectiveSubmitRef.current(interimCommandText, "voice", true).then((success: boolean) => {
+                if (success) {
+                  isVoiceProcessingRef.current = true;
+                  setVoiceTranscript(`Executing: "${interimCommandText}"`);
+                  if (recognitionRef.current) {
+                    try { recognitionRef.current.stop(); } catch (e) {}
+                  }
+                  setTimeout(() => {
+                    isVoiceProcessingRef.current = false;
+                    setVoiceTranscript("");
+                  }, COOLDOWN_TIME);
+                }
+              });
+            }
+          }
         }
 
         if (finalTranscript) {
@@ -2593,7 +2620,7 @@ export default function Dashboard() {
           if (!commandText) return;
           isVoiceProcessingRef.current = true;
 
-          handleAiDirectiveSubmitRef.current(commandText, "voice");
+          handleAiDirectiveSubmitRef.current(commandText, "voice", false);
 
           setTimeout(() => {
             isVoiceProcessingRef.current = false;
