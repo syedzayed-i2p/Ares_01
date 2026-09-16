@@ -23,10 +23,11 @@ Barishal Polytechnic Institute
   * 1.3 Running the Web Dashboard
   * 1.4 Operating the Rover (Voice & Sliders)
 * **Part 2: Build / Assembly Manual & Hardware Details**
-  * 2.1 Detailed Component List & Usage Justification
-  * 2.2 System Power Distribution (11.1V & 5V Logic)
-  * 2.3 I2C Logic Level Translation
-  * 2.4 Comprehensive Motor Driver Wiring (Pin-to-Pin)
+  * 2.1 3D Printed Chassis (Rover Body)
+  * 2.2 Detailed Component List & Usage Justification
+  * 2.3 System Power Distribution (11.1V & 5V Logic)
+  * 2.4 I2C Logic Level Translation
+  * 2.5 Comprehensive Motor Driver Wiring (Pin-to-Pin)
 * **Part 3: Technical / Developer Manual**
   * 3.1 Software & System Architecture
   * 3.2 WebSocket Communication JSON Protocol
@@ -78,7 +79,13 @@ Before running the dashboard, your computer needs Node.js.
 
 ## Part 2: Build / Assembly Manual & Hardware Details
 
-### 2.1 Detailed Component List & Usage Justification
+### 2.1 3D Printed Chassis (Rover Body)
+The physical structure of ARES-01 is based on a highly robust open-source 3D printable model. If anyone wishes to replicate this rover entirely from scratch, they can easily download the chassis components and 3D print them (PLA or PETG recommended).
+
+* **Download Link:** [Mini Mars Rover on Printables](https://www.printables.com/model/791157-mini-mars-rover)
+* **Integration:** This chassis perfectly houses the 4 DC Rover Wheels and provides a stable mounting platform for the 5-DOF Robotic Arm Edge Kit on top.
+
+### 2.2 Detailed Component List & Usage Justification
 Every component in ARES-01 serves a specific purpose in the architecture.
 
 | Sl | Component Name | Qty | Specific Usage in Project |
@@ -95,7 +102,7 @@ Every component in ARES-01 serves a specific purpose in the architecture.
 | 10 | **Robotic Arm Edge Kit (5 DOF)** | 1 | The mechanical chassis of the arm, allowing complex object manipulation. |
 | 11 | **DC Motor (Rover Wheel)** | 4 | The 4-wheel drive system enabling all-terrain navigation. |
 
-### 2.2 System Power Distribution (11.1V & 5V Logic)
+### 2.3 System Power Distribution (11.1V & 5V Logic)
 **WARNING:** Never connect the 11.1V LiPo battery directly to the ESP32 or Logic components.
 
 | Power Source | Component | Input Voltage | Output | Target Connection |
@@ -108,7 +115,7 @@ Every component in ARES-01 serves a specific purpose in the architecture.
 | **Buck Converter** | PCA9685 (x2) | 5.0V | - | ➔ `VCC` & `V+` Pins |
 | **Buck Converter** | Level Converter | 5.0V | - | ➔ `HV` (High Voltage Ref) |
 
-### 2.3 I2C Logic Level Translation
+### 2.4 I2C Logic Level Translation
 Because the ESP32-S3 operates at 3.3V and the PCA9685 operates best at 5V, data must pass through the Logic Converter safely.
 
 | ESP32-S3 (3.3V Logic) | Level Converter Bridge | PCA9685 (5V Logic) |
@@ -118,7 +125,7 @@ Because the ESP32-S3 operates at 3.3V and the PCA9685 operates best at 5V, data 
 | `3.3V Pin` | ➔ `LV` (Reference) | - |
 | `GND` | ➔ `GND` | ➔ `GND` (Common) |
 
-### 2.4 Comprehensive Motor Driver Wiring (Pin-to-Pin)
+### 2.5 Comprehensive Motor Driver Wiring (Pin-to-Pin)
 *This section details the exact pin-to-pin wiring extracted directly from the ESP32-S3 C++ firmware source code (`HardwareController.cpp`).*
 
 #### A. PCA9685 Addressing Setup

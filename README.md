@@ -31,6 +31,7 @@ Developed using the Arduino Core on PlatformIO. The firmware heavily utilizes Fr
 ### 2. Hardware Stack
 * **Microcontroller (ESP32-S3 WROOM-1):** Acts as the main brain of the rover. It utilizes dual-core processing to concurrently handle the HTTP camera stream, WebSocket telemetry, and PWM signal generation for all motors.
 * **Motor Drivers (L298N & TB6612FNG):** Used to actuate the standard DC motors. They provide the necessary current to drive the rover's wheels for movement, as well as powering the 5-DOF robotic arm joints (Base, Shoulder, Elbow, Wrist, Gripper) using custom PWM positioning.
+* **3D Printed Chassis (Rover Body):** The mechanical base of the rover utilizes an open-source 3D printable model. To replicate the physical body, download the print files here: [Mini Mars Rover on Printables](https://www.printables.com/model/791157-mini-mars-rover).
 * **Vision System (OV2640 Camera Module):** Captures real-time video for remote navigation and inspection, streaming it directly to the React mission control dashboard with ultra-low latency.
 * **Power Delivery (12.6V Li-ion Battery & 5V Buck Converters):** The 12.6V battery pack provides high-current raw power to the motor drivers, while the 5V buck converters step down the voltage to safely power the ESP32-S3 and other sensitive logic components without causing voltage drops or brownouts.
 
@@ -41,7 +42,7 @@ ARES-01/
 ├── esp32_firmware/       # PlatformIO project containing the C++ ESP32 source code
 ├── web_app/              # React frontend for the Mission Control Dashboard
 ├── tools/                # Python scripts for network scanning, mocking, and WS testing
-└── ARES_01_Project_Documentation.md  # Detailed hardware & API specifications
+└── ARES_01_Full_Project_Manual.md  # Detailed hardware & API specifications
 ```
 
 ## Getting Started
