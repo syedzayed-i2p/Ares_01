@@ -633,7 +633,7 @@ void setup() {
   vTaskDelay(pdMS_TO_TICKS(50));
 
   WiFi.setSleep(false);
-  WiFi.setTxPower(WIFI_POWER_8_5dBm); // Limit TX power to prevent brownouts!
+  WiFi.setTxPower(WIFI_POWER_19_5dBm); // Set to max TX power to fix high ping and dropping
   delay(500);
 
   preferences.begin("ares", false);
