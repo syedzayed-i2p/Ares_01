@@ -633,13 +633,14 @@ void setup() {
   vTaskDelay(pdMS_TO_TICKS(50));
 
   WiFi.setSleep(false);
-  WiFi.setTxPower(WIFI_POWER_19_5dBm); // Set to max TX power to fix high ping and dropping
+  esp_wifi_set_ps(WIFI_PS_NONE); // Force disable Power Save on PHY to fix ping spikes
+  WiFi.setTxPower(WIFI_POWER_8_5dBm); // Revert to 8.5dBm to strictly prevent voltage brownout drops
   delay(500);
 
   preferences.begin("ares", false);
   // -- 4. NETWORK INITIALIZATION --
   WiFi.mode(WIFI_AP);
-  WiFi.softAP(ap_ssid, ap_password, 6, 0, 4);
+  WiFi.softAP(ap_ssid, ap_password, 1, 0, 4); // Use Channel 1 to avoid Channel 6 congestion
   ESP_LOGI(TAG_WIFI, "Running strictly in Offline AP Mode. IP: %s", WiFi.softAPIP().toString().c_str());
   
   delay(1000);
