@@ -1,5 +1,5 @@
 # ARES-01: Autonomous & Teleoperated Mission Rover
-**Comprehensive Project Manual**
+**Comprehensive Project Manual, Build Guide & Technical Architecture**
 
 ---
 **Submitted By:**
@@ -17,103 +17,154 @@ Barishal Polytechnic Institute
 ---
 
 ## 📑 Table of Contents
-* **Part 1: User / Operation Manual**
-  * 1.1 Project Overview
-  * 1.2 Operating the Dashboard & Voice Control
-  * 1.3 Operation Guidelines & Hints
-* **Part 2: Build / Assembly Manual**
-  * 2.1 Complete Parts List
-  * 2.2 Hardware Assembly & Wiring Overview
+* **Part 1: User / Operation Manual (Zero-to-Hero Guide)**
+  * 1.1 Downloading the Project
+  * 1.2 Setting Up the Environment (Node.js & pnpm)
+  * 1.3 Running the Web Dashboard
+  * 1.4 Operating the Rover (Voice & Sliders)
+* **Part 2: Build / Assembly Manual & Hardware Details**
+  * 2.1 Detailed Component List & Usage Justification
+  * 2.2 System Power Distribution
+  * 2.3 Comprehensive Pin Mapping & Wiring Diagram
 * **Part 3: Technical / Developer Manual**
   * 3.1 Software & System Architecture
-  * 3.2 Code Architecture
-  * 3.3 System Workflow & Data Flow
-  * 3.4 Version Control & Troubleshooting Matrix
-  * 3.5 GitHub Repository
+  * 3.2 WebSocket Communication JSON Protocol
+  * 3.3 Version Control & Troubleshooting Matrix
+  * 3.4 Official GitHub Repository
 
 ---
 
-## Part 1: User / Operation Manual
+## Part 1: User / Operation Manual (Zero-to-Hero Guide)
+*This section is designed for absolute beginners. It explains exactly how to run the ARES-01 dashboard on your computer from scratch.*
 
-### 1.1 Project Overview
-**ARES-01** is a custom-designed, teleoperated mission rover built for remote inspection, manipulation, and navigation. The system combines a robust hardware chassis with a **5-DOF (Degree of Freedom) Robotic Arm**, all controlled wirelessly through a modern web-based dashboard. 
-The defining feature is its **Bilingual Voice Control System** (Bengali and English). It processes voice commands locally within the browser using Voice Activity Detection (VAD) and instantly transmits execution directives via WebSockets, ensuring real-time response.
+### 1.1 Downloading the Project
+1. Open your web browser and go to the official GitHub repository: [https://github.com/syedzayed-i2p/Ares_01](https://github.com/syedzayed-i2p/Ares_01)
+2. Click on the green **"<> Code"** button located at the top right of the file list.
+3. Select **"Download ZIP"**.
+4. Once downloaded, locate the `.zip` file in your Downloads folder. Right-click on it and select **"Extract All..."** (or use WinRAR/7-Zip) to extract the files into a normal folder.
 
-### 1.2 Operating the Dashboard & Voice Control
-* **Dashboard Access:** Open the React web application in your browser and enter the ESP32-S3's local IP address.
-* **Manual Control:** Use the on-screen interactive sliders to control the 5-DOF robotic arm (Base, Shoulder, Elbow, Wrist, Gripper). The sliders map 0-180 degree angles to absolute PWM ranges.
-* **Voice Control:** Click the microphone icon to activate. Speak clearly in either Bengali (e.g., "সামনে যাও", "হাত ঘুরাও") or English. The VAD will auto-detect the end of your sentence and execute the command instantly (~1.2s response time).
+### 1.2 Setting Up the Environment (Node.js & pnpm)
+Before running the dashboard, your computer needs Node.js.
+1. Go to [nodejs.org](https://nodejs.org/) and download the **LTS (Long Term Support)** version. Install it like any normal software.
+2. Once Node.js is installed, we need to install `pnpm` (a fast package manager).
+3. Press `Windows Key`, type **PowerShell**, right-click on it, and select **"Run as Administrator"**.
+4. Type the following command and press Enter:
+   ```bash
+   npm install -g pnpm
+   ```
+5. *Wait for the installation to finish.* You are now ready to run the project.
 
-### 1.3 Operation Guidelines & Hints
-* **Battery Safety:** Always monitor the battery telemetry on the dashboard. Do not let the 3S LiPo pack drop below 10.5V to prevent cell damage.
-* **Voice Command Best Practices:** Speak clearly and pause for 1 second after finishing a command to trigger immediate execution.
+### 1.3 Running the Web Dashboard
+1. Go to the extracted `Ares_01` folder. Double click and go inside the `web_app` folder.
+2. Inside the `web_app` folder, click on the **address bar** at the top of the folder window, type `powershell`, and hit **Enter**. This will open a blue PowerShell window directly in that folder.
+3. First, download all the required project files by typing:
+   ```bash
+   pnpm install
+   ```
+4. Once it finishes downloading, start the local server by typing:
+   ```bash
+   pnpm run dev
+   ```
+5. You will see a message saying a local server has started. Open Google Chrome (or any modern browser) and type this address in the URL bar:
+   **`http://localhost:5173`**
+
+### 1.4 Operating the Rover (Voice & Sliders)
+* **Connecting:** Turn on the physical rover. Wait 10 seconds. Enter the Rover's local IP address in the dashboard box and click "Connect". The live camera feed will appear.
+* **Manual Control:** Use the interactive sliders on the screen to control the 5-DOF robotic arm (Base, Shoulder, Elbow, Wrist, Gripper). Sliding it updates the physical arm in real time.
+* **Voice Control:** Click the Microphone icon. Speak clearly in Bengali (e.g., "সামনে যাও", "ডানে ঘুরাও"). Wait 1 second after speaking; the system's Voice Activity Detection (VAD) will automatically process the command and move the rover.
 
 ---
 
-## Part 2: Build / Assembly Manual
+## Part 2: Build / Assembly Manual & Hardware Details
 
-### 2.1 Complete Parts List
-Below is the comprehensive list of all hardware components used to assemble ARES-01:
+### 2.1 Detailed Component List & Usage Justification
+Every component in ARES-01 serves a specific purpose in the architecture.
 
-| Sl. No. | Component Name | Quantity | Description / Application |
+| Sl | Component Name | Qty | Specific Usage in Project |
 | :---: | :--- | :---: | :--- |
-| 1 | **ESP32-S3 CAM Dev Board (with OV2640 & Antenna)** | 1 | The main dual-core microcontroller processing video, WebSockets, and logic. |
-| 2 | **PCA9685 PWM Driver** | 2 | Expands PWM outputs via I2C to control multiple motor drivers simultaneously. |
-| 3 | **I2C Logic Level Converter** | 1 | Safely translates the 3.3V I2C logic of the ESP32 to 5V logic for external modules. |
-| 4 | **TB6612FNG Motor Driver** | 2 | Efficient motor drivers used for high-precision motor control (wheels/arm). |
-| 5 | **L298N Motor Driver** | 3 | High-power H-Bridge drivers for handling the main drive chassis and heavy arm joints. |
-| 6 | **Voltage Regulator Buck Converter** | 1 | Steps down the 11.1V battery voltage to a stable 5V for logic boards. |
-| 7 | **LiPo Battery, 3300mAh, 11.1V, 3S** | 1 | The primary high-voltage, high-discharge power source for the entire rover. |
-| 8 | **T-Connector (XT60)** | 1 | Secure power connector for the LiPo battery. |
-| 9 | **Switch** | 1 | Main power toggle switch for the system. |
-| 10 | **Robotic Arm Edge Kit (5 DOF Gear Motor)** | 1 | The physical mechanical arm structure driven by gear motors. |
-| 11 | **DC Motor (Rover Wheel)** | 4 | Geared DC motors driving the four wheels of the rover base. |
+| 1 | **ESP32-S3 CAM Dev Board (with OV2640 & Antenna)** | 1 | The absolute "Brain" of the rover. It processes the camera video, hosts the Wi-Fi WebSocket server, and issues I2C commands to move motors. |
+| 2 | **PCA9685 PWM Driver** | 2 | Since the ESP32 doesn't have enough PWM pins for 9 motors, these drivers expand the capability. They convert simple I2C signals into 16 channels of perfect PWM signals. |
+| 3 | **I2C Logic Level Converter** | 1 | The ESP32 runs at 3.3V, but the PCA9685 prefers 5V logic. This chip bridges them, ensuring signals aren't corrupted or hardware fried. |
+| 4 | **TB6612FNG Motor Driver** | 2 | Used for the smaller precision gear motors of the robotic arm. It is highly efficient and runs cooler than older drivers. |
+| 5 | **L298N Motor Driver** | 3 | Used for the heavy-duty rover base wheels and the main base/shoulder joint of the robotic arm which require high current. |
+| 6 | **Voltage Regulator (Buck Converter)** | 1 | Takes the dangerous 11.1V from the LiPo battery and converts it into a perfectly safe, stable 5.0V to power the delicate ESP32 and logic boards. |
+| 7 | **LiPo Battery (3300mAh, 11.1V, 3S)** | 1 | The main fuel tank. 11.1 Volts provides immense torque to the motors, while 3300mAh ensures long mission duration. |
+| 8 | **T-Connector (XT60)** | 1 | A secure, spark-proof connector ensuring the high-current battery doesn't accidentally disconnect during rover movement. |
+| 9 | **Switch** | 1 | The main kill-switch to power the entire system on or off instantly. |
+| 10 | **Robotic Arm Edge Kit (5 DOF)** | 1 | The mechanical chassis of the arm, allowing complex object manipulation. |
+| 11 | **DC Motor (Rover Wheel)** | 4 | The 4-wheel drive system enabling all-terrain navigation. |
 
-### 2.2 Hardware Assembly & Wiring Overview
-* **Power Distribution:** The 11.1V 3S LiPo battery connects via the XT60 T-Connector through the main Switch. Raw 11.1V power is routed to the L298N and TB6612FNG motor drivers for maximum torque. The Voltage Regulator Buck Converter steps this down to 5V to power the ESP32-S3 and PCA9685 drivers.
-* **Logic Routing:** The ESP32-S3 communicates with the PCA9685 PWM drivers via the I2C bus. Because the ESP32 operates at 3.3V, an I2C Logic Level Converter bridges the connection to ensure stable signals.
-* **Motor Actuation:** The PCA9685 outputs precise PWM signals to the L298N and TB6612FNG motor drivers, which in turn drive the 4 DC Rover Wheels and the 5 DOF Robotic Arm Edge Kit.
+### 2.2 System Power Distribution
+**WARNING:** Never connect the 11.1V LiPo battery directly to the ESP32.
+1. **LiPo Battery (11.1V)** connects to the **Main Switch**.
+2. **From the Switch:**
+   * **Path A (High Power):** 11.1V goes directly into the `12V Input` of the **L298N Motor Drivers**.
+   * **Path B (Logic Power):** 11.1V goes into the `IN+` of the **Buck Converter**.
+3. **From the Buck Converter:**
+   * Outputs a stable **5V**.
+   * 5V goes to the **ESP32-S3 `5V Pin`**.
+   * 5V goes to the **PCA9685 `VCC/V+ Pin`**.
+   * 5V goes to the **Logic Level Converter `HV Pin`**.
+
+### 2.3 Comprehensive Pin Mapping & Wiring Diagram
+*(Note: Digital mapping based on I2C routing and standard H-Bridge control)*
+
+**Data Communication (I2C Bus):**
+* **ESP32-S3 `SDA Pin`** ➔ Logic Converter `LV1` ➔ Logic Converter `HV1` ➔ **PCA9685 `SDA`**
+* **ESP32-S3 `SCL Pin`** ➔ Logic Converter `LV2` ➔ Logic Converter `HV2` ➔ **PCA9685 `SCL`**
+
+**PCA9685 to Motor Driver (Example for 1 Wheel):**
+* PCA9685 `PWM Channel 0` ➔ L298N `ENA` (Speed Control)
+* PCA9685 `PWM Channel 1` ➔ L298N `IN1` (Direction Forward)
+* PCA9685 `PWM Channel 2` ➔ L298N `IN2` (Direction Reverse)
+* L298N `OUT1` & `OUT2` ➔ Positive & Negative terminals of the DC Wheel Motor.
+*(This exact 3-pin logic is repeated across all PCA channels for the 4 wheels and 5 arm joints).*
 
 ---
 
 ## Part 3: Technical / Developer Manual
 
 ### 3.1 Software & System Architecture
-The system architecture is divided into a **Frontend Client** and a **Backend Firmware**.
-* **Frontend (React Web App):** Built using React, TypeScript, and TailwindCSS. It utilizes the browser's native SpeechRecognition API for VAD and establishes a pure WebSocket connection for real-time duplex communication.
-* **Backend (ESP32 Firmware):** Built on the Arduino Core (PlatformIO). It leverages FreeRTOS for true concurrency. Core 0 handles the intensive OV2640 MJPEG camera stream, while Core 1 manages the WebSocket server, parses incoming JSON control packets, and updates hardware PWM registers.
+* **Frontend (React/Vite):** Utilizes functional components and custom React hooks (`useVoiceCommand`, `useWebSocket`). State management controls the 5-DOF sliders.
+* **Backend Firmware (FreeRTOS):** 
+  * `Core 0`: Pinned for the OV2640 camera capture and HTTP chunked MJPEG response. This ensures video encoding never interrupts physical movement.
+  * `Core 1`: Handles WebSocket asynchronous events. Parses JSON strings via `ArduinoJson` library.
 
-### 3.2 Code Architecture
-```text
-ARES-01/
-├── esp32_firmware/            # Firmware Backend
-│   ├── src/main.cpp           # Entry point and FreeRTOS task definitions
-│   ├── include/config.h       # Pin assignments and hardware constraints
-│
-├── web_app/                   # React Frontend
-│   ├── src/pages/dashboard.tsx # Main UI, 5-DOF sliders, and telemetry
-│   ├── src/hooks/             # Custom React hooks for WebSocket and VAD Voice logic
+### 3.2 WebSocket Communication JSON Protocol
+When a user clicks a button or speaks, the frontend sends a highly structured JSON payload. 
+
+**Example Payload for Rover Movement:**
+```json
+{
+  "command_type": "drive",
+  "direction": "FORWARD",
+  "speed_pwm": 255
+}
 ```
 
-### 3.3 System Workflow & Data Flow
-1. **Input Generation:** The user moves a slider or speaks a voice command.
-2. **Translation & JSON Packing:** The React app translates the input into a structured JSON payload (e.g., `{"type": "drive", "dir": "F", "speed": 255}`).
-3. **Transmission:** The payload is sent via WebSockets with near-zero latency.
-4. **Parsing & Execution:** The ESP32 decodes the JSON, determines the target motor, and updates the PCA9685 PWM duty cycle via I2C. The motor drivers then actuate the motors.
+**Example Payload for Arm Movement (Absolute Angle):**
+```json
+{
+  "command_type": "arm",
+  "joint": "SHOULDER",
+  "angle": 120
+}
+```
 
-### 3.4 Version Control & Troubleshooting Matrix
+### 3.3 Version Control & Troubleshooting Matrix
 
 | Issue / Fault Symptom | Probable Cause | Diagnostic Check | Corrective Action |
 | :--- | :--- | :--- | :--- |
-| **Motors not responding** | PWM Jumper still present | Inspect L298N ENA/ENB headers | Remove black jumper caps |
-| **ESP32 reboots continuously** | Power conflict on 5V pin | Check L298N 5V-EN jumper | Remove 5V-EN jumper cap |
-| **Camera stream failure** | GPIO pin conflict | Check connection to GPIO 4 / 5 | Disconnect peripherals on pins 4/5 |
-| **Incorrect battery reading**| Resistor divider mismatch | Measure 33k and 10k resistors | Recalibrate ADC telemetry scalar |
-| **Erratic motor movement** | Common ground loop/potentials | Check GND continuity bus | Tie all module grounds together |
+| **Motors not responding** | PWM Jumper still present | Inspect L298N ENA/ENB headers | Remove black jumper caps from L298N |
+| **ESP32 reboots continuously**| Power conflict on 5V pin | Check L298N 5V-EN jumper | Remove 5V-EN jumper cap on all drivers |
+| **Camera stream failure** | GPIO pin conflict | Check connection to GPIO 4 / 5 | Disconnect any peripherals on pins 4/5 |
+| **Erratic motor movement** | Common ground loop/potentials | Check GND continuity bus | Tie all module (Driver, ESP32, Buck) GNDs together |
+| **`pnpm` command not found**| Node.js path error | Open PowerShell, type `node -v` | Re-install Node.js and check "Add to PATH" |
 
-### 3.5 GitHub Repository
-* **Repository Link:** [https://github.com/syedzayed-i2p/Ares_01](https://github.com/syedzayed-i2p/Ares_01)
-* **Status:** Open Source (MIT License)
+### 3.4 Official GitHub Repository
+All source code is maintained openly.
+* **Repository:** [https://github.com/syedzayed-i2p/Ares_01](https://github.com/syedzayed-i2p/Ares_01)
+* **License:** MIT Open Source
 
 ---
-*Developed by the ARES-01 Team.*
+*End of Documentation. Developed by the ARES-01 Project Team.*
