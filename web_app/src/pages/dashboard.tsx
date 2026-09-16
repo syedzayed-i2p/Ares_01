@@ -2587,29 +2587,19 @@ export default function Dashboard() {
         if (interimTranscript) {
           setVoiceTranscript(`Hearing: "${interimTranscript}"...`);
           
-          // FAST-PATH: INSTANT EXECUTION ON INTERIM RESULTS
-          if (!isVoiceProcessingRef.current) {
-            const interimCommandText = interimTranscript.trim().toLowerCase();
-            if (interimCommandText.length > 2) {
-              // Try executing immediately using local fallback logic
-              handleAiDirectiveSubmitRef.current(interimCommandText, "voice", true).then((success: boolean) => {
-                if (success) {
-                  isVoiceProcessingRef.current = true;
-                  setVoiceTranscript(`Executing: "${interimCommandText}"`);
-                  if (recognitionRef.current) {
-                    try { recognitionRef.current.stop(); } catch (e) {}
-                  }
-                  setTimeout(() => {
-                    isVoiceProcessingRef.current = false;
-                    setVoiceTranscript("");
-                  }, COOLDOWN_TIME);
-                }
-              });
-            }
+          // Custom VAD (Voice Activity Detection): Force stop after 1.2s of silence to execute quickly
+          if ((window as any).voiceSilenceTimer) {
+            clearTimeout((window as any).voiceSilenceTimer);
           }
+          (window as any).voiceSilenceTimer = setTimeout(() => {
+            if (recognitionRef.current && !isVoiceProcessingRef.current) {
+              try { recognitionRef.current.stop(); } catch (e) {}
+            }
+          }, 1200);
         }
 
         if (finalTranscript) {
+          if ((window as any).voiceSilenceTimer) clearTimeout((window as any).voiceSilenceTimer);
           if (isVoiceProcessingRef.current) return;
           const spokenText = finalTranscript.trim();
           console.log("Recognized:", spokenText);
