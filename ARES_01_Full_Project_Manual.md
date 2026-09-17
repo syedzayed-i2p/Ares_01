@@ -68,12 +68,32 @@ Before running the dashboard, your computer needs Node.js.
    pnpm run dev
    ```
 5. You will see a message saying a local server has started. Open Google Chrome (or any modern browser) and type this address in the URL bar:
-   **`http://localhost:5173`**
+   **`http://localhost:1420`**
 
-### 1.4 Operating the Rover (Voice & Sliders)
-* **Connecting:** Turn on the physical rover. Wait 10 seconds. Enter the Rover's local IP address in the dashboard box and click "Connect". The live camera feed will appear.
-* **Manual Control:** Use the interactive sliders on the screen to control the 5-DOF robotic arm (Base, Shoulder, Elbow, Wrist, Gripper). Sliding it updates the physical arm in real time.
-* **Voice Control:** Click the Microphone icon. Speak clearly in Bengali (e.g., "সামনে যাও", "ডানে ঘুরাও"). Wait 1 second after speaking; the system's Voice Activity Detection (VAD) will automatically process the command and move the rover.
+### 1.4 Mission Control Dashboard Guide (How to Use)
+Once the web app is open, follow these steps to connect and control the rover:
+
+**1. System Settings & Connecting to the Rover (⚙️ Icon)**
+*   Look at the top-right corner of the dashboard and click the **Settings (⚙️ Gear)** icon.
+*   A modal titled **SYSTEM SETTINGS** will appear. Under "Hardware Connections", find the **Rover IP Address** field.
+*   Enter your Rover's local IP Address (e.g., `192.168.4.1` for Offline AP) and click **Connect**.
+*   The "ROVER OFFLINE" red badge at the top-left will turn into a green "ROVER ONLINE" badge, and telemetry (Ping and RSSI) will activate.
+
+**2. Manual Control Tab (Arm & Drive)**
+*   **Drive Controls (Directional Pad):** Located at the bottom right. Use the Up, Down, Left, and Right arrow buttons to move the rover. The red square in the middle acts as a quick STOP button.
+*   **5-DOF Arm Control:** Use the sliders or the increment/decrement arrows to rotate the Base, Shoulder, Elbow, Wrist, and Gripper. You can also manually type an exact coordinate angle (e.g., `90°`) and click **EXECUTE**.
+
+**3. Offline Macros & AI Control Tab**
+*   **Offline Text Command (AI Directive):** Click the "OFFLINE MACROS" or "AI Directive" tab. Type commands manually like `"Initiate pick up sequence"` in the text box and hit send. The local AI engine will process the text offline without needing the cloud.
+*   **Voice Control:** Switch to the **Voice Command** tab. Click the language dropdown and select your language (e.g., **বাংলা**). Click the large **Mic (🎙️)** button and speak (e.g., "সামনে যাও"). The transcript and system response will appear in the Voice Commands Log.
+
+**4. ESP Studio & Serial Monitor (Terminal `>_` Icon)**
+*   Click the **Terminal (`>_`)** icon at the top right to open the built-in **ESP Studio**.
+*   Here you can browse the embedded C++ firmware (like `main.cpp`) directly from the browser.
+*   To debug the rover, connect the ESP32 via USB and click the **Connect Serial** button on the right panel (Baud Rate: 115200) to view real-time hardware logs.
+
+**5. UI Theme Customization (🌙/☀️ Icon)**
+*   Click the **Moon/Sun** icon at the top-right corner to toggle the dashboard's visual theme between **Dark Mode**, **Light Mode**, or System Default for comfortable viewing in any environment.
 
 ---
 
