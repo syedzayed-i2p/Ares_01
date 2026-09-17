@@ -128,10 +128,20 @@ Because the ESP32-S3 operates at 3.3V and the PCA9685 operates best at 5V, data 
 ### 2.5 Comprehensive Motor Driver Wiring (Pin-to-Pin)
 *This section details the exact pin-to-pin wiring extracted directly from the ESP32-S3 C++ firmware source code (`HardwareController.cpp`).*
 
-#### A. PCA9685 Addressing Setup
-To control 9 motors simultaneously, two PCA9685 boards share the same I2C bus but use different hardware addresses.
+#### A. PCA9685 Addressing & Daisy-Chain Setup
+To control 9 motors simultaneously, two PCA9685 boards must be physically connected together (Daisy-Chained) and share the same I2C bus using different hardware addresses.
+
+**1. Hardware Addressing:**
 *   **Board 1 (Drive Wheels):** Factory Default **`0x40`**.
 *   **Board 2 (Robotic Arm):** Change to **`0x41`**. *(To do this: Solder the two halves of the `A0` pad together on the board).*
+
+**2. Daisy-Chain Physical Wiring (Linking the Boards):**
+Instead of connecting both boards directly to the ESP32, you connect Board 1 to the logic converter, and then plug Board 2 directly into the side header pins of Board 1.
+*   `SCL` (Board 1) ➔ `SCL` (Board 2)
+*   `SDA` (Board 1) ➔ `SDA` (Board 2)
+*   `VCC` (Board 1) ➔ `VCC` (Board 2) *(5V Logic Power)*
+*   `GND` (Board 1) ➔ `GND` (Board 2)
+*   `V+` (Board 1) ➔ `V+` (Board 2) *(Motor Power)*
 
 #### B. PCA Board 1 (0x40) ➔ 2x L298N (Drive Wheels)
 *Used exclusively for the 4-wheel drive system.*
