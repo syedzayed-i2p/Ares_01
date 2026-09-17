@@ -4,10 +4,13 @@
 
 ---
 **🎓 Academic Project & Official Approval**  
-This project was carried out and officially documented in partial fulfillment of the requirements for the Diploma in Engineering (Session: 2022-23).
+This project was originally developed and documented as a **7th Semester Academic Project** in partial fulfillment of the requirements for the Diploma in Engineering (Session: 2022-23).
 *   **Institute:** Barishal Govt. Polytechnic Institute, Barishal, Bangladesh
-*   **Submitted By:** Students of the Department of Electronics Technology
+*   **Department:** Electronics Technology
 *   **Supervised By:** Gazi Saiful Islam (Chief Instructor, Electronics Department)
+
+**🌍 Open Source Release**  
+This repository has been made fully public and open-source. Students, hobbyists, and developers are highly encouraged to use, study, or modify this rover architecture for their own academic projects, research, or personal learning.
 
 📄 **[View the Official Signed PDF Manual](./ARES-01%20Autonomous%20Rover%20Complete%20Technical%20%26%20User%20Manual.pdf)**
 ---
