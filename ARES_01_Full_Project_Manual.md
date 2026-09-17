@@ -3,18 +3,21 @@
 
 ---
 **Submitted By:**
-Department of Electronics Technology
+Students of the Department of Electronics Technology
 Diploma in Engineering
 Session: 2022-23
 
 **Supervised By:**
 Gazi Saiful Islam
 Chief Instructor, Electronics Department
-Barishal Polytechnic Institute, Barishal
+Barishal Govt. Polytechnic Institute, Barishal, Bangladesh
 
 **Institute:**
-Barishal Polytechnic Institute
+Barishal Govt. Polytechnic Institute
+Barishal, Bangladesh
 ---
+
+*Note: The officially signed & approved PDF version of this manual is available in the repository root.*
 
 ## 📑 Table of Contents
 * **Part 1: User / Operation Manual (Zero-to-Hero Guide)**

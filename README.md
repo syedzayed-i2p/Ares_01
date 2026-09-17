@@ -2,6 +2,16 @@
 
 > **Autonomous & Teleoperated Mission Rover with a 5-DOF Robotic Arm**
 
+---
+**🎓 Academic Project & Official Approval**  
+This project was carried out and officially documented in partial fulfillment of the requirements for the Diploma in Engineering (Session: 2022-23).
+*   **Institute:** Barishal Govt. Polytechnic Institute, Barishal, Bangladesh
+*   **Submitted By:** Students of the Department of Electronics Technology
+*   **Supervised By:** Gazi Saiful Islam (Chief Instructor, Electronics Department)
+
+📄 **[View the Official Signed PDF Manual](./ARES-01%20Autonomous%20Rover%20Complete%20Technical%20%26%20User%20Manual.pdf)**
+---
+
 ARES-01 is an advanced, custom-built teleoperated rover designed for remote inspection, manipulation, and navigation in complex environments. It features a fully integrated software and hardware stack, bridging an ESP32-S3 microcontroller with a modern React-based mission control dashboard.
 
 What fundamentally distinguishes ARES-01 is its **Bilingual Voice Control System** (supporting both Bengali and English). It utilizes a custom zero-latency fast-path execution engine with built-in Voice Activity Detection (VAD). This allows for instantaneous physical hardware response to voice commands without relying on external cloud APIs for core navigation.
