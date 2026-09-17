@@ -19,7 +19,7 @@ Barishal, Bangladesh
 
 *Note: The officially signed & approved PDF version of this manual is available in the repository root.*
 
-## 📑 Table of Contents
+## Table of Contents
 * **Part 1: User / Operation Manual (Zero-to-Hero Guide)**
   * 1.1 Downloading the Project
   * 1.2 Setting Up the Environment (Node.js & pnpm)
@@ -76,26 +76,26 @@ Before running the dashboard, your computer needs Node.js.
 ### 1.4 Mission Control Dashboard Guide (How to Use)
 Once the web app is open, follow these steps to connect and control the rover:
 
-**1. System Settings & Connecting to the Rover (⚙️ Icon)**
-*   Look at the top-right corner of the dashboard and click the **Settings (⚙️ Gear)** icon.
+**1. System Settings & Connecting to the Rover (âš™ï¸ Icon)**
+*   Look at the top-right corner of the dashboard and click the **Settings (âš™ï¸ Gear)** icon.
 *   A modal titled **SYSTEM SETTINGS** will appear. Under "Hardware Connections", find the **Rover IP Address** field.
 *   Enter your Rover's local IP Address (e.g., `192.168.4.1` for Offline AP) and click **Connect**.
 *   The "ROVER OFFLINE" red badge at the top-left will turn into a green "ROVER ONLINE" badge, and telemetry (Ping and RSSI) will activate.
 
 **2. Manual Control Tab (Arm & Drive)**
 *   **Drive Controls (Directional Pad):** Located at the bottom right. Use the Up, Down, Left, and Right arrow buttons to move the rover. The red square in the middle acts as a quick STOP button.
-*   **5-DOF Arm Control:** Use the sliders or the increment/decrement arrows to rotate the Base, Shoulder, Elbow, Wrist, and Gripper. You can also manually type an exact coordinate angle (e.g., `90°`) and click **EXECUTE**.
+*   **5-DOF Arm Control:** Use the sliders or the increment/decrement arrows to rotate the Base, Shoulder, Elbow, Wrist, and Gripper. You can also manually type an exact coordinate angle (e.g., `90Â°`) and click **EXECUTE**.
 
 **3. Offline Macros & AI Control Tab**
 *   **Offline Text Command (AI Directive):** Click the "OFFLINE MACROS" or "AI Directive" tab. Type commands manually like `"Initiate pick up sequence"` in the text box and hit send. The local AI engine will process the text offline without needing the cloud.
-*   **Voice Control:** Switch to the **Voice Command** tab. Click the language dropdown and select your language (e.g., **বাংলা**). Click the large **Mic (🎙️)** button and speak (e.g., "সামনে যাও"). The transcript and system response will appear in the Voice Commands Log.
+*   **Voice Control:** Switch to the **Voice Command** tab. Click the language dropdown and select your language (e.g., **à¦¬à¦¾à¦‚à¦²à¦¾**). Click the large **Mic (ðŸŽ™ï¸)** button and speak (e.g., "à¦¸à¦¾à¦®à¦¨à§‡ à¦¯à¦¾à¦“"). The transcript and system response will appear in the Voice Commands Log.
 
 **4. ESP Studio & Serial Monitor (Terminal `>_` Icon)**
 *   Click the **Terminal (`>_`)** icon at the top right to open the built-in **ESP Studio**.
 *   Here you can browse the embedded C++ firmware (like `main.cpp`) directly from the browser.
 *   To debug the rover, connect the ESP32 via USB and click the **Connect Serial** button on the right panel (Baud Rate: 115200) to view real-time hardware logs.
 
-**5. UI Theme Customization (🌙/☀️ Icon)**
+**5. UI Theme Customization (ðŸŒ™/â˜€ï¸ Icon)**
 *   Click the **Moon/Sun** icon at the top-right corner to toggle the dashboard's visual theme between **Dark Mode**, **Light Mode**, or System Default for comfortable viewing in any environment.
 
 ---
@@ -130,23 +130,23 @@ Every component in ARES-01 serves a specific purpose in the architecture.
 
 | Power Source | Component | Input Voltage | Output | Target Connection |
 | :--- | :--- | :---: | :---: | :--- |
-| **LiPo Battery (3S)** | Main Switch | 11.1V | 11.1V | ➔ XT60 Connector |
-| **Main Switch** | L298N Drivers (x3) | 11.1V | - | ➔ `12V Input` Pin |
-| **Main Switch** | TB6612 Drivers (x2) | 11.1V | - | ➔ `VMOT` Pin |
-| **Main Switch** | Buck Converter | 11.1V | 5.0V | ➔ `IN+` Pin |
-| **Buck Converter** | ESP32-S3 | 5.0V | - | ➔ `5V` Pin |
-| **Buck Converter** | PCA9685 (x2) | 5.0V | - | ➔ `VCC` & `V+` Pins |
-| **Buck Converter** | Level Converter | 5.0V | - | ➔ `HV` (High Voltage Ref) |
+| **LiPo Battery (3S)** | Main Switch | 11.1V | 11.1V | âž” XT60 Connector |
+| **Main Switch** | L298N Drivers (x3) | 11.1V | - | âž” `12V Input` Pin |
+| **Main Switch** | TB6612 Drivers (x2) | 11.1V | - | âž” `VMOT` Pin |
+| **Main Switch** | Buck Converter | 11.1V | 5.0V | âž” `IN+` Pin |
+| **Buck Converter** | ESP32-S3 | 5.0V | - | âž” `5V` Pin |
+| **Buck Converter** | PCA9685 (x2) | 5.0V | - | âž” `VCC` & `V+` Pins |
+| **Buck Converter** | Level Converter | 5.0V | - | âž” `HV` (High Voltage Ref) |
 
 ### 2.4 I2C Logic Level Translation
 Because the ESP32-S3 operates at 3.3V and the PCA9685 operates best at 5V, data must pass through the Logic Converter safely.
 
 | ESP32-S3 (3.3V Logic) | Level Converter Bridge | PCA9685 (5V Logic) |
 | :--- | :--- | :--- |
-| `GPIO 1 (SDA)` | ➔ `LV1` ➔ `HV1` | ➔ `SDA` (Board 1 & 2) |
-| `GPIO 2 (SCL)` | ➔ `LV2` ➔ `HV2` | ➔ `SCL` (Board 1 & 2) |
-| `3.3V Pin` | ➔ `LV` (Reference) | - |
-| `GND` | ➔ `GND` | ➔ `GND` (Common) |
+| `GPIO 1 (SDA)` | âž” `LV1` âž” `HV1` | âž” `SDA` (Board 1 & 2) |
+| `GPIO 2 (SCL)` | âž” `LV2` âž” `HV2` | âž” `SCL` (Board 1 & 2) |
+| `3.3V Pin` | âž” `LV` (Reference) | - |
+| `GND` | âž” `GND` | âž” `GND` (Common) |
 
 ### 2.5 Comprehensive Motor Driver Wiring (Pin-to-Pin)
 *This section details the exact pin-to-pin wiring extracted directly from the ESP32-S3 C++ firmware source code (`HardwareController.cpp`).*
@@ -160,33 +160,33 @@ To control 9 motors simultaneously, two PCA9685 boards must be physically connec
 
 **2. Daisy-Chain Physical Wiring (Linking the Boards):**
 Instead of connecting both boards directly to the ESP32, you connect Board 1 to the logic converter, and then plug Board 2 directly into the side header pins of Board 1.
-*   `SCL` (Board 1) ➔ `SCL` (Board 2)
-*   `SDA` (Board 1) ➔ `SDA` (Board 2)
-*   `VCC` (Board 1) ➔ `VCC` (Board 2) *(5V Logic Power)*
-*   `GND` (Board 1) ➔ `GND` (Board 2)
-*   `V+` (Board 1) ➔ `V+` (Board 2) *(Motor Power)*
+*   `SCL` (Board 1) âž” `SCL` (Board 2)
+*   `SDA` (Board 1) âž” `SDA` (Board 2)
+*   `VCC` (Board 1) âž” `VCC` (Board 2) *(5V Logic Power)*
+*   `GND` (Board 1) âž” `GND` (Board 2)
+*   `V+` (Board 1) âž” `V+` (Board 2) *(Motor Power)*
 
-#### B. PCA Board 1 (0x40) ➔ 2x L298N (Drive Wheels)
+#### B. PCA Board 1 (0x40) âž” 2x L298N (Drive Wheels)
 *Used exclusively for the 4-wheel drive system.*
 
 | Motor Driver | Target Motor | PWM (Speed) | Direction 1 | Direction 2 |
 | :--- | :--- | :--- | :--- | :--- |
-| **L298N #1 (Left)** | Front Left Wheel | PCA1 `Ch 0` ➔ `ENA` | PCA1 `Ch 2` ➔ `IN1` | PCA1 `Ch 1` ➔ `IN2` |
-| | Back Left Wheel | PCA1 `Ch 5` ➔ `ENB` | PCA1 `Ch 4` ➔ `IN3` | PCA1 `Ch 3` ➔ `IN4` |
-| **L298N #2 (Right)**| Front Right Wheel| PCA1 `Ch 6` ➔ `ENA` | PCA1 `Ch 8` ➔ `IN1` | PCA1 `Ch 7` ➔ `IN2` |
-| | Back Right Wheel | PCA1 `Ch 11` ➔ `ENB`| PCA1 `Ch 10` ➔ `IN3`| PCA1 `Ch 9` ➔ `IN4` |
+| **L298N #1 (Left)** | Front Left Wheel | PCA1 `Ch 0` âž” `ENA` | PCA1 `Ch 2` âž” `IN1` | PCA1 `Ch 1` âž” `IN2` |
+| | Back Left Wheel | PCA1 `Ch 5` âž” `ENB` | PCA1 `Ch 4` âž” `IN3` | PCA1 `Ch 3` âž” `IN4` |
+| **L298N #2 (Right)**| Front Right Wheel| PCA1 `Ch 6` âž” `ENA` | PCA1 `Ch 8` âž” `IN1` | PCA1 `Ch 7` âž” `IN2` |
+| | Back Right Wheel | PCA1 `Ch 11` âž” `ENB`| PCA1 `Ch 10` âž” `IN3`| PCA1 `Ch 9` âž” `IN4` |
 *(Note: PCA1 Channel 15 is pulled HIGH in firmware to optionally enable TB6612 STBY pins if shared).*
 
-#### C. PCA Board 2 (0x41) ➔ 1x L298N & 2x TB6612FNG (Robotic Arm)
+#### C. PCA Board 2 (0x41) âž” 1x L298N & 2x TB6612FNG (Robotic Arm)
 *Used exclusively for the 5-DOF Robotic Arm.*
 
 | Motor Driver | Target Arm Joint | PWM (Speed) | Direction 1 | Direction 2 |
 | :--- | :--- | :--- | :--- | :--- |
-| **L298N #3 (Heavy)**| Base Rotation | PCA2 `Ch 12` ➔ `ENA` | PCA2 `Ch 13` ➔ `IN1` | PCA2 `Ch 14` ➔ `IN2` |
-| **TB6612 #1** | Arm Wrist | PCA2 `Ch 0` ➔ `PWMA` | PCA2 `Ch 1` ➔ `AIN1` | PCA2 `Ch 2` ➔ `AIN2` |
-| | Arm Elbow | PCA2 `Ch 3` ➔ `PWMB` | PCA2 `Ch 4` ➔ `BIN1` | PCA2 `Ch 5` ➔ `BIN2` |
-| **TB6612 #2** | Arm Shoulder | PCA2 `Ch 6` ➔ `PWMA` | PCA2 `Ch 7` ➔ `AIN1` | PCA2 `Ch 8` ➔ `AIN2` |
-| | Arm Gripper | PCA2 `Ch 9` ➔ `PWMB` | PCA2 `Ch 15` ➔ `BIN1`| PCA2 `Ch 11` ➔ `BIN2` |
+| **L298N #3 (Heavy)**| Base Rotation | PCA2 `Ch 12` âž” `ENA` | PCA2 `Ch 13` âž” `IN1` | PCA2 `Ch 14` âž” `IN2` |
+| **TB6612 #1** | Arm Wrist | PCA2 `Ch 0` âž” `PWMA` | PCA2 `Ch 1` âž” `AIN1` | PCA2 `Ch 2` âž” `AIN2` |
+| | Arm Elbow | PCA2 `Ch 3` âž” `PWMB` | PCA2 `Ch 4` âž” `BIN1` | PCA2 `Ch 5` âž” `BIN2` |
+| **TB6612 #2** | Arm Shoulder | PCA2 `Ch 6` âž” `PWMA` | PCA2 `Ch 7` âž” `AIN1` | PCA2 `Ch 8` âž” `AIN2` |
+| | Arm Gripper | PCA2 `Ch 9` âž” `PWMB` | PCA2 `Ch 15` âž” `BIN1`| PCA2 `Ch 11` âž” `BIN2` |
 
 ---
 
