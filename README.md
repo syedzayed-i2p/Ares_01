@@ -85,7 +85,18 @@ ARES-01/
 
 ## Contributors
 
-*(Contributors will be added here...)*
+### Core Engineering Team
+
+| Avatar | Name | Email |
+| :---: | :--- | :--- |
+| <img src="https://github.com/syedzayed-i2p.png" width="50" border-radius="50%"/> | [Syed Zayed Hassan](https://github.com/syedzayed-i2p) | [syedratul555@gmail.com](mailto:syedratul555@gmail.com) |
+| <img src="https://github.com/bayzidhossen2021-crypto.png" width="50" border-radius="50%"/> | [Md. Bayzid Hossen](https://github.com/bayzidhossen2021-crypto) | [bayzidhossen2021@gmail.com](mailto:bayzidhossen2021@gmail.com) |
+| <img src="https://github.com/sidhartha9.png" width="50" border-radius="50%"/> | [Sidhartha Saha](https://github.com/sidhartha9) | [sidharthasaha009@gmail.com](mailto:sidharthasaha009@gmail.com) |
+| <img src="https://github.com/makin000.png" width="50" border-radius="50%"/> | [Makin Gazi](https://github.com/makin000) | [mdmakin55@gmail.com](mailto:mdmakin55@gmail.com) |
+
+### Project Contributors
+
+> Baizid Sikder, Zakaria Hawlader, Md. Shahin, Md. Sabbir Mahmud, Md. Siam, Md. Shahadat Hossain, Md. Tanmoy Sakib, Mahadi Hasan Shawon, Md. Hasan Piyada, Md. Labib, Md. Suruj, Nabil Sikder, Md. Hasibur Rahman, Md. Hasib, Sayem Hossain, Shovan Das Orko, Md. Imamul Haque, Sajib Bepari, Tariqul Islam, Joy Barlin, Md. Ismail Hossain Sagar.
 
 ---
 *Developed by the ARES-01 Team.*
