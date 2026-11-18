@@ -96,7 +96,39 @@ ARES-01/
 
 ### Project Contributors
 
-> Baizid Sikder, Zakaria Hawlader, Md. Shahin, Md. Sabbir Mahmud, Md. Siam, Md. Shahadat Hossain, Md. Tanmoy Sakib, Mahadi Hasan Shawon, Md. Hasan Piyada, Md. Labib, Md. Suruj, Nabil Sikder, Md. Hasibur Rahman, Md. Hasib, Sayem Hossain, Shovan Das Orko, Md. Imamul Haque, Sajib Bepari, Tariqul Islam, Joy Barlin, Md. Ismail Hossain Sagar.
+<table>
+  <tr>
+    <td valign="top">
+      <ul>
+        <li>Baizid Sikder</li>
+        <li>Zakaria Hawlader</li>
+        <li>Md. Shahin</li>
+        <li>Md. Sabbir Mahmud</li>
+        <li>Md. Siam</li>
+        <li>Md. Shahadat Hossain</li>
+        <li>Md. Tanmoy Sakib</li>
+        <li>Mahadi Hasan Shawon</li>
+        <li>Md. Hasan Piyada</li>
+        <li>Md. Labib</li>
+        <li>Md. Suruj</li>
+      </ul>
+    </td>
+    <td valign="top">
+      <ul>
+        <li>Nabil Sikder</li>
+        <li>Md. Hasibur Rahman</li>
+        <li>Md. Hasib</li>
+        <li>Sayem Hossain</li>
+        <li>Shovan Das Orko</li>
+        <li>Md. Imamul Haque</li>
+        <li>Sajib Bepari</li>
+        <li>Tariqul Islam</li>
+        <li>Joy Barlin</li>
+        <li>Md. Ismail Hossain Sagar</li>
+      </ul>
+    </td>
+  </tr>
+</table>
 
 ---
 *Developed by the ARES-01 Team.*
